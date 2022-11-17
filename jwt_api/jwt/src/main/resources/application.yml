@@ -1,0 +1,27 @@
+spring:
+  thymeleaf:
+      prefix: classpath:templates/
+      suffix: .html
+      cache: false
+  mvc:
+    static-path-pattern: "/static/**"
+  
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mypetlikeit_db
+    username: miju
+    password: alwn1225@
+  
+  redis:
+    port: 6379
+    host: localhost
+
+mybatis:
+  type-aliases-package: com.mypetlikeit.domain
+  mapper-locations: mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  
+jwt:
+  secret: realjwtsuperverysecretkeyrealjwtsuperverysecretkey
+  # 시크릿키가 짧으면 에러가 발생함, 길게 설정할것

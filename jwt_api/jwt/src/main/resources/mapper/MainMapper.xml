@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jwt.main.mapper.MainMapper">
+
+        <select id="getMemberList" resultType="HashMap">
+                select * from TB_MEMBER;
+        </select>
+        
+        <insert id="memberSave">
+                INSERT into TB_MEMBER (
+                MEMBER_LOGINID, MEMBER_PW, MEMBER_USERNAME, MEMBER_NICKNAME,
+                MEMBER_EMAIL, MEMBER_PET_YN, MEMBER_PET_NAME, 
+                MEMBER_PET_CATEGORY, MEMBER_WANT_PET, MEMBER_CREATE)
+                values (
+                #{loginId}, #{password}, #{username}, #{nickname},
+                #{email}, #{petYN}, #{petName},
+                #{petCategory}, #{wantPet}, now()
+                );
+        </insert>
+        
+        <insert id="authoritySave">
+                INSERT into TB_AUTHORITY (
+                AUTHORITY_ROLE, MEMBER_ID) 
+                values (
+                #{role}, #{memberId}
+                );
+        </insert>
+        
+        <select id="memberLoginId" resultType="HashMap">
+                select * from TB_MEMBER 
+                where MEMBER_LOGINID = #{loginId}
+                ;
+        </select>
+        
+        <select id="memberNickname" resultType="HashMap">
+                select * from TB_MEMBER 
+                where MEMBER_NICKNAME = #{nickname}
+                ;
+        </select>
+        
+        <select id="memberUsername" resultType="HashMap">
+                select * from TB_MEMBER 
+                where MEMBER_USERNAME = #{username}
+                ;
+        </select>
+        
+        <select id="getLoginMember" resultType="HashMap">
+                select * from TB_MEMBER 
+                where MEMBER_LOGINID = #{loginId}
+                and MEMBER_PW = #{password}
+                ;
+        </select>
+        
+        <select id="getAuthority" resultType="HashMap">
+                select * from TB_AUTHORITY 
+                where MEMBER_ID = #{id}
+                ;
+        </select>
+        
+</mapper>
