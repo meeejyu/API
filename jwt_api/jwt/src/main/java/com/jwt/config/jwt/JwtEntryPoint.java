@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
-// 시큐리티 필터 과정 중 에러가 발생할 경우 처리
 @Slf4j
 @Component
 public class JwtEntryPoint implements AuthenticationEntryPoint{
@@ -20,7 +19,7 @@ public class JwtEntryPoint implements AuthenticationEntryPoint{
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        log.error("Unauthorized error: {}", authException.getMessage());
+        log.error("Unauthorized error 인증 되지 않은, 가입되지 않은 사용자 접근 : {}", authException.getMessage());
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
     }
     

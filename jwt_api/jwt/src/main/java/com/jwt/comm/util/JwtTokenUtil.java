@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.jwt.config.jwt.JwtExpirationEnums;
 
-// import com.mypetlikeit.config.jwt.JwtExpirationEnums;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

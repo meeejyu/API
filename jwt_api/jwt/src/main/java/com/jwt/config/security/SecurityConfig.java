@@ -2,12 +2,9 @@ package com.jwt.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.jwt.config.jwt.JwtAuthenticationFilter;
+import com.jwt.config.jwt.JwtAuthorityHandler;
 import com.jwt.config.jwt.JwtEntryPoint;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +23,9 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtEntryPoint jwtEntryPoint; // 시큐리티 필터 과정중 에러가 발생할 경우 처리
+    private final JwtAuthorityHandler jwtAuthorityHandler; // 인가에 대한 필터
     private final JwtAuthenticationFilter jwtAuthenticationFilter; // jwt 관련 필터
-    private final CustomUserDetailService customUserDetailService; // userDetailsService라는 유저의 정보를 가져오기 위한 클래스
+    // private final CustomUserDetailService customUserDetailService; // userDetailsService라는 유저의 정보를 가져오기 위한 클래스
 
     // 비밀번호 암호화
     // 비밀번호 검사 하는 로직
@@ -63,30 +62,22 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/bootstrap/**/**").permitAll()
                 .antMatchers("/login", "/main", "/", "/member", "/signup", "/signup/success", "/signup/check",
-                        "/member/idCheck", "/member/nickCheck", "/login/check","/favicon.ico", "/login/success").permitAll()
+                        "/member/idCheck").permitAll()
                 .antMatchers("/user/**", "/logout", "/reissue").hasRole("USER")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // 인증이 되어야한다
-                
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtEntryPoint)
-
+                .exceptionHandling() // 예외처리 기능이 작동
+                .authenticationEntryPoint(jwtEntryPoint) // 인증실패시 처리
+                .accessDeniedHandler(jwtAuthorityHandler) // 인가실패시 처리
                 /* jwt 기반으로 로그인/로그아웃을 처리할것이기 때문에 기존 login, logout 배제
                     스프링 시큐리티는 기본 로그인 / 로그아웃 시 세션을 통해 유저 정보들을 저장한다.
                     하지만 Redis를 사용할 것이기 떄문에 상태를 저장하지 않는 STATELESS로 설정
                 */ 
-                
-
-                // .and()
-                // .formLogin()
-                // .loginPage("/login").permitAll()
-                // .defaultSuccessUrl("/index")
-                
                 .and()
                 .logout().disable()
+                // 스프링 시큐리티가 세션을 생성하지도 않고 기존것을 사용하지도 않음
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                // .logoutUrl("/logout")
-
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // jwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter전에 추가
                 .build();

@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 
 
 @Controller
-// @RequestMapping(value = "/")
 @RequiredArgsConstructor
 public class MainController {
 
@@ -43,7 +42,7 @@ public class MainController {
         return ResponseEntity.ok(mainServiceImpl.reissue(refreshToken));
     }
 
-    @PostMapping("/login/success")
+    @PostMapping("/login")
     public ResponseEntity<TokenDto> loginSuccess(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
 
         loginDto.encryptionPass(loginDto);
@@ -53,12 +52,19 @@ public class MainController {
         return ResponseEntity.ok(mainServiceImpl.getLoginMemberToken(loginDto));
     }
 
+    // USER 권한 있을시 접근 가능
     @GetMapping("/user/main")
-    // public String userMain(LoginDto loginDto) {
     public @ResponseBody String userMain() {
         System.out.println("추카 포카");
 
         return "userMain";
+    }
+
+    @GetMapping("/admin/main")
+    public @ResponseBody String adminMain() {
+        System.out.println("추카 포카");
+
+        return "adminMain";
     }
 
     @GetMapping("/member")
