@@ -65,7 +65,7 @@ public class SecurityConfig {
                         "/member/idCheck").permitAll()
                 .antMatchers("/user/**", "/logout", "/reissue").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated() // 인증이 되어야한다
+                .anyRequest().authenticated() // 모든 리소스에 대해 인증/인가가 성공이 되어야 접근 할 수 있다
                 .and()
                 .exceptionHandling() // 예외처리 기능이 작동
                 .authenticationEntryPoint(jwtEntryPoint) // 인증실패시 처리

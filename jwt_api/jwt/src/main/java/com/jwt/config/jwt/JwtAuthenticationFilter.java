@@ -47,9 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
                 // UserDetails에서 가져온 username과 토큰에서 가져온 username 비교
-                validateAccessToken(accessToken, userDetails);
+                validateAccessToken(accessToken);
 
-                // securityContext에 해당 정보를 넣어줌
+                // securityContext에 해당 user정보를 넣어줌
                 processSecurity(request, userDetails);
             }
         }
@@ -70,8 +70,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void validateAccessToken(String accessToken, UserDetails userDetails) {
-        if(!jwtTokenUtil.validateToken(accessToken, userDetails)) {
+    private void validateAccessToken(String accessToken) {
+        if(!jwtTokenUtil.validateToken(accessToken)) {
             throw new IllegalArgumentException("토큰 검증 실패");
         }
     }

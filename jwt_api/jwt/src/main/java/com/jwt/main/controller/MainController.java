@@ -67,6 +67,13 @@ public class MainController {
         return "adminMain";
     }
 
+    @GetMapping("/testAuth")
+    public @ResponseBody String testAuth(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("추카 포카");
+
+        return "testAuth";
+    }
+
     @GetMapping("/member")
     public @ResponseBody List<Map<String, Object>> member() {
         List<Map<String, Object>> memberMap = mainService.getMemberList();
