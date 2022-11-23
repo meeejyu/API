@@ -23,6 +23,7 @@ public class RefreshToken {
     private String refreshToken;
 
     // 설정한 시간 만큼 데이터를 저장한다. 설정한 시간이 지나면 자동으로 데이터가 사라지는 휘발 역할을 해줍니다.
+    // TTL 설정
     @TimeToLive
     private Long expiration;
 

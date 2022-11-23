@@ -2,7 +2,6 @@ package com.jwt.main.serviceImpl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.Authentication;
@@ -110,11 +109,11 @@ public class MainServiceImpl implements MainService{
     public TokenDto reissue(String refreshToken) {
         refreshToken = resolveToken(refreshToken);
         String username = getCurrentUsername();
-        RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
-
-        if(refreshToken.equals(redisRefreshToken.getRefreshToken())) {
-            return reissueRefreshToken(refreshToken, username);
-        }
+        // 리프레시 토큰 hash에서 값을 가져옴
+        RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).get();
+            if(refreshToken.equals(redisRefreshToken.getRefreshToken())) {
+                return reissueRefreshToken(refreshToken, username);
+            }   
         throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
     }
 
@@ -129,6 +128,7 @@ public class MainServiceImpl implements MainService{
         return TokenDto.of(accessToken, refreshToken.getRefreshToken());
     }
 
+    // 토큰 생성완료 저장됨
     private RefreshToken saveRefreshToken(String username) {
         return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(
             username, jwtTokenUtil.generateAccessToken(username), JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue()));

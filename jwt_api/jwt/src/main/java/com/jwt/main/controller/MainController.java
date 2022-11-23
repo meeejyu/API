@@ -67,6 +67,7 @@ public class MainController {
         return "adminMain";
     }
 
+    // 스프링 시큐리티에 명시 안된 코드
     @GetMapping("/testAuth")
     public @ResponseBody String testAuth(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("추카 포카");

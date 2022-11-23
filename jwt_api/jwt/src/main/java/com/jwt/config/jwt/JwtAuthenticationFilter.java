@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.jwt.comm.util.JwtTokenUtil;
 import com.jwt.config.security.CustomUserDetailService;
 import com.jwt.domain.jwt.LogoutAccessTokenRedisRepository;
+import com.jwt.domain.jwt.RefreshTokenRedisRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailService customUserDetailService;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,7 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             checkLogout(accessToken);
             
             String username = jwtTokenUtil.getUsername(accessToken);
+
             if(username !=null) {
+
+                // 만료된 토큰인지 확인
+                refreshTokenRedisRepository.findById(username).orElseThrow(() -> new IllegalArgumentException("토큰이 일치하지 않습니다."));
+
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
                 // UserDetails에서 가져온 username과 토큰에서 가져온 username 비교
