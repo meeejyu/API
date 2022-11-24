@@ -1,6 +1,5 @@
 package com.jwt.main.serviceImpl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -13,10 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jwt.comm.util.JwtTokenUtil;
 import com.jwt.config.cache.CacheKey;
 import com.jwt.config.jwt.JwtExpirationEnums;
-import com.jwt.domain.Authority;
 import com.jwt.domain.LoginDto;
-import com.jwt.domain.Member;
-import com.jwt.domain.MemberInsertDto;
 import com.jwt.domain.TokenDto;
 import com.jwt.domain.jwt.LogoutAccessToken;
 import com.jwt.domain.jwt.LogoutAccessTokenRedisRepository;
@@ -38,30 +34,9 @@ public class MainServiceImpl implements MainService{
     private final JwtTokenUtil jwtTokenUtil;
 
     @Override
-    public List<Map<String, Object>> getMemberList() {
-        return mainMapper.getMemberList();
-    }
-
-    @Override
     public Map<String, Object> memberLoginId(String loginId) {
         Map<String, Object> map = mainMapper.memberLoginId(loginId);        
         return map;
-    }
-
-    @Override
-    public Map<String, Object> memberNickname(String nickname) {
-        Map<String, Object> map = mainMapper.memberNickname(nickname);        
-        return map;
-    }
-
-    @Override
-    public void memberSave(MemberInsertDto memberInsertDto) {
-        mainMapper.memberSave(Member.ofUser(memberInsertDto));  
-    }
-
-    @Override
-    public void authoritySave(Authority authority) {
-        mainMapper.authoritySave(authority);        
     }
 
     @Override
@@ -131,7 +106,7 @@ public class MainServiceImpl implements MainService{
     // 토큰 생성완료 저장됨
     private RefreshToken saveRefreshToken(String username) {
         return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(
-            username, jwtTokenUtil.generateAccessToken(username), JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
+            username, jwtTokenUtil.generateRefreshToken(username), JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
     }
 
     @CacheEvict(value = CacheKey.USER, key= "#username")
@@ -140,6 +115,11 @@ public class MainServiceImpl implements MainService{
         long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
         refreshTokenRedisRepository.deleteById(username);
         logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
+    }
+
+    @CacheEvict(value = CacheKey.USER, key= "#username")
+    public void refreshTokenDelete(TokenDto tokenDto, String username) {
+        refreshTokenRedisRepository.deleteById(username);
     }
 
 }

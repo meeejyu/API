@@ -30,7 +30,6 @@ public class CustomUserDetails implements UserDetails{
     private String username;
     private String password;
 
-    @Builder.Default
     private List<String> roles = new ArrayList<>();
     
     public static UserDetails of(Map<String, Object> memberMap) {
@@ -47,7 +46,6 @@ public class CustomUserDetails implements UserDetails{
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-                // .collect(toList());
     }
 
     @Override

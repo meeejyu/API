@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // getToken 메서드로 헤더에서 JWT를 Bearer를 제외하여 가져온다. 만약 null이면 그대로 반환한다
         String accessToken = getToken(request); 
+        log.info("accessToken = {}",accessToken);
         if(accessToken !=null) {
 
             // 로그아웃 검증
@@ -51,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 만료된 토큰인지 확인
                 refreshTokenRedisRepository.findById(username).orElseThrow(() -> new IllegalArgumentException("토큰이 일치하지 않습니다."));
 
+                // loadUserByUsername를 통해 회원 정보를 cache함.
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
                 // UserDetails에서 가져온 username과 토큰에서 가져온 username 비교

@@ -20,6 +20,6 @@ public class JwtAuthorityHandler implements AccessDeniedHandler{
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
             log.error("권한이 없는 사용자 로그인 : {}", accessDeniedException.getMessage());
-            response.sendError(response.SC_FORBIDDEN, "Error: forbidden");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Error: forbidden");
     }
 }

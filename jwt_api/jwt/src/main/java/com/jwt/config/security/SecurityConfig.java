@@ -6,8 +6,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,23 +23,6 @@ public class SecurityConfig {
     private final JwtEntryPoint jwtEntryPoint; // 시큐리티 필터 과정중 에러가 발생할 경우 처리
     private final JwtAuthorityHandler jwtAuthorityHandler; // 인가에 대한 필터
     private final JwtAuthenticationFilter jwtAuthenticationFilter; // jwt 관련 필터
-    // private final CustomUserDetailService customUserDetailService; // userDetailsService라는 유저의 정보를 가져오기 위한 클래스
-
-    // 비밀번호 암호화
-    // 비밀번호 검사 하는 로직
-    /*
-     * 사용할 userDetailsService를 passwordEncoder에 명시적으로 설정했었는데
-     * Bean으로 들옭만 해두면 스프링 시큐리티에 의해 해당 빈들이 사용된다.
-     */
-    // 이전 코드
-    // @Override
-    // protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    //     auth.userDetailsService(customUserDetailService).passwordEncoder(passwordEncoder());
-    // }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -82,24 +63,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // jwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter전에 추가
                 .build();
     }
-
-    // protected void configure(Aute)
-
-    /*
-     * resources(css, js 등) 의 경우 securityContext 등에 대한 조회가 불필요 하므로 disable 한다
-     * @Order(0) 을 추가하여 먼저 FilterChain 을 타도록 지정한다
-     */
-    // @Bean
-    // @Order(0)
-    // public SecurityFilterChain resources(HttpSecurity http) throws Exception {
-    //     return http.requestMatchers(matchers -> matchers
-    //             .antMatchers("/resources/**"))
-    //             .authorizeHttpRequests(authorize -> authorize
-    //                     .anyRequest().permitAll())
-    //             .requestCache(RequestCacheConfigurer::disable)
-    //             .securityContext(AbstractHttpConfigurer::disable)
-    //             .sessionManagement(AbstractHttpConfigurer::disable)
-    //             .build();
-    // }
-
 }

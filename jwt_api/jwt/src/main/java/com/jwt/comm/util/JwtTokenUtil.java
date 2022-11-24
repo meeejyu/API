@@ -5,7 +5,6 @@ import java.security.Key;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.jwt.config.jwt.JwtExpirationEnums;
@@ -51,12 +50,10 @@ public class JwtTokenUtil {
     }
 
     public String generateAccessToken(String username) {
-        // return doGenerateToken(username, ACCESS_TOKEN_EXPIRATION_TIME.getValue());
         return doGenerateToken(username, JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME.getValue());
     }
 
     public String generateRefreshToken(String username) {
-        // return doGenerateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
         return doGenerateToken(username, JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
@@ -78,9 +75,6 @@ public class JwtTokenUtil {
     }
 
     public Boolean validateToken(String token) {
-        // String username = getUsername(token); // 중복된 로직
-        // return username.equals(userDetails.getUsername())
-        //         && !isTokenExpired(token);
         return !isTokenExpired(token);
     }
 
