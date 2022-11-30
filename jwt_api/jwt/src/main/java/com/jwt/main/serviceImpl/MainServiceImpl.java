@@ -2,7 +2,10 @@ package com.jwt.main.serviceImpl;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +35,9 @@ public class MainServiceImpl implements MainService{
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public Map<String, Object> memberLoginId(String loginId) {
@@ -121,5 +127,44 @@ public class MainServiceImpl implements MainService{
     public void refreshTokenDelete(TokenDto tokenDto, String username) {
         refreshTokenRedisRepository.deleteById(username);
     }
+
+
+
+
+// 2번쨰 방법 : redisRepositoryConfig를 통해 키 저장
+
+    // public TokenDto reissue(String refreshToken) {
+    //     refreshToken = resolveToken(refreshToken);
+    //     String username = getCurrentUsername();
+    //     // 리프레시 토큰 hash에서 값을 가져옴
+
+    //     // ValueOperations<String, String> valueOperations = redisTemplate.opsForHash();
+    //     RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).get();
+
+    //         if(refreshToken.equals(redisRefreshToken.getRefreshToken())) {
+    //             return reissueRefreshToken(refreshToken, username);
+    //         }   
+    //     throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+    // }
+
+    // // 토큰 생성완료 저장됨
+    // private RefreshToken saveRefreshToken(String username) {
+    //     return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(
+    //         username, jwtTokenUtil.generateRefreshToken(username), JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
+    // }
+
+    // @CacheEvict(value = CacheKey.USER, key= "#username")
+    // public void logout(TokenDto tokenDto, String username) {
+    //     String accessToken = resolveToken(tokenDto.getAccessToken());
+    //     long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
+    //     refreshTokenRedisRepository.deleteById(username);
+    //     logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
+    // }
+
+    // @CacheEvict(value = CacheKey.USER, key= "#username")
+    // public void refreshTokenDelete(TokenDto tokenDto, String username) {
+    //     refreshTokenRedisRepository.deleteById(username);
+    // }
+
 
 }
