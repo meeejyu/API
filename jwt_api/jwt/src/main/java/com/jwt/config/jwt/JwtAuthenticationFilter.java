@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -50,7 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(username !=null) {
 
                 // 만료된 토큰인지 확인
-                refreshTokenRedisRepository.findById(username).orElseThrow(() -> new IllegalArgumentException("토큰이 일치하지 않습니다."));
+                // 1. 레파지토리 사용
+                // refreshTokenRedisRepository.findById(username).orElseThrow(() -> new IllegalArgumentException("토큰이 일치하지 않습니다."));
+
+                // 2. redisTemplate를 사용하는 경우
+                String value = "";
+                value = (String) redisTemplate.opsForHash().get("refreshToken:"+username, "refreshToken");
+                if(value==null) {
+                    throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+                }
 
                 // loadUserByUsername를 통해 회원 정보를 cache함.
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
@@ -72,9 +85,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+    
+    // 레피지토리 사용해서 확인
+    // private void checkLogout(String accessToken) {
+    //     if(logoutAccessTokenRedisRepository.existsById(accessToken)) {
+    //         throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
+    //     }
+    // }
 
+    // redisTemplate를 사용하는 경우
     private void checkLogout(String accessToken) {
-        if(logoutAccessTokenRedisRepository.existsById(accessToken)) {
+        String value = "";
+        value = (String) redisTemplate.opsForHash().get("logoutAccessToken:"+accessToken, "id");
+        if(value!=null) {
             throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
         }
     }

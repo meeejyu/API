@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/bootstrap/**/**").permitAll()
                 .antMatchers("/login", "/main", "/", "/member", "/signup", "/signup/success", "/signup/check",
-                        "/member/idCheck").permitAll()
+                        "/member/idCheck", "/token/test").permitAll()
                 .antMatchers("/user/**", "/logout", "/reissue").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // 모든 리소스에 대해 인증/인가가 성공이 되어야 접근 할 수 있다

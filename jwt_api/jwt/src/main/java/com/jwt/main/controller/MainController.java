@@ -101,7 +101,7 @@ public class MainController {
                         @RequestHeader("RefreshToken") String refreshToken) {
         
         String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
-        mainServiceImpl.refreshTokenDelete(TokenDto.of(accessToken, refreshToken), username);
+        mainServiceImpl.refreshTokenDelete(username);
         return "success";
     }
 
@@ -109,5 +109,11 @@ public class MainController {
         return accessToken.substring(7);
     }
     
+    @GetMapping("/token/test")
+    public @ResponseBody String tokenTest() {
+        mainServiceImpl.tokenTest();
+
+        return "success";
+    }
 
 }
